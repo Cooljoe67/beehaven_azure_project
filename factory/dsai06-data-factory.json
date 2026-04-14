@@ -1,0 +1,9 @@
+{
+	"name": "dsai06-data-factory",
+	"location": "germanywestcentral",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "41a4556d-c333-45f2-b14b-f85a67e91e6d",
+		"tenantId": "a4382f25-e8ca-4ffd-85fc-45491daffab2"
+	}
+}
