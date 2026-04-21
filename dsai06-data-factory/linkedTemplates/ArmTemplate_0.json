@@ -22,6 +22,14 @@
 		"AzureDataLakeStorage1_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://dsaidatalake.dfs.core.windows.net/"
+		},
+		"AzureKeyVault1_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://beehavenkey.vault.azure.net/"
+		},
+		"SynapsThingyStuff_properties_typeProperties_endpoint": {
+			"type": "string",
+			"defaultValue": "https://beehavensynwrkspc.dev.azuresynapse.net"
 		}
 	},
 	"variables": {
@@ -67,6 +75,34 @@
 						"type": "SecureString",
 						"value": "[parameters('AzureDataLakeStorage1_accountKey')]"
 					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureKeyVault1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureKeyVault",
+				"typeProperties": {
+					"baseUrl": "[parameters('AzureKeyVault1_properties_typeProperties_baseUrl')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SynapsThingyStuff')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSynapseArtifacts",
+				"typeProperties": {
+					"endpoint": "[parameters('SynapsThingyStuff_properties_typeProperties_endpoint')]",
+					"authentication": "MSI",
+					"workspaceResourceId": "/subscriptions/9fa67757-54c7-4b52-8934-ea6235ddecef/resourceGroups/dsai06-bee-heaven/providers/Microsoft.Synapse/workspaces/beehavensynwrkspc"
 				}
 			},
 			"dependsOn": []
@@ -416,8 +452,6 @@
 					{
 						"name": "CpyFrmBrnzNew2SlvrPrc",
 						"type": "Copy",
-						"state": "Inactive",
-						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [
 							{
 								"activity": "ForEachCldinBronzeNew",
@@ -516,6 +550,32 @@
 								"enablePartitionDiscovery": false
 							}
 						}
+					},
+					{
+						"name": "SynpsDatacleanAndWeather",
+						"type": "SynapseNotebook",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.0:10:00",
+							"retry": 1,
+							"retryIntervalInSeconds": 60,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"snapshot": true,
+							"conf": {
+								"spark.dynamicAllocation.enabled": null,
+								"spark.dynamicAllocation.minExecutors": null,
+								"spark.dynamicAllocation.maxExecutors": null
+							},
+							"numExecutors": null
+						},
+						"linkedServiceName": {
+							"referenceName": "SynapsThingyStuff",
+							"type": "LinkedServiceReference"
+						}
 					}
 				],
 				"policy": {
@@ -527,6 +587,7 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/BeehavenBronceNew')]",
 				"[concat(variables('factoryId'), '/datasets/SlvrProcessing')]",
+				"[concat(variables('factoryId'), '/linkedServices/SynapsThingyStuff')]",
 				"[concat(variables('factoryId'), '/datasets/BeeHavenBronzeArc')]"
 			]
 		}
