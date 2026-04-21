@@ -1,0 +1,12 @@
+{
+	"name": "SynapsThingyStuff",
+	"properties": {
+		"annotations": [],
+		"type": "AzureSynapseArtifacts",
+		"typeProperties": {
+			"endpoint": "https://beehavensynwrkspc.dev.azuresynapse.net",
+			"authentication": "MSI",
+			"workspaceResourceId": "/subscriptions/9fa67757-54c7-4b52-8934-ea6235ddecef/resourceGroups/dsai06-bee-heaven/providers/Microsoft.Synapse/workspaces/beehavensynwrkspc"
+		}
+	}
+}
