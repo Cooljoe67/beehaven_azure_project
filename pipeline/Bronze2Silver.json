@@ -229,6 +229,22 @@
 						"enablePartitionDiscovery": false
 					}
 				}
+			},
+			{
+				"name": "SynpsDatacleanAndWeather",
+				"type": "SynapseNotebook",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.0:10:00",
+					"retry": 1,
+					"retryIntervalInSeconds": 60,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"snapshot": true
+				}
 			}
 		],
 		"annotations": [],
