@@ -134,6 +134,8 @@
 			{
 				"name": "CpyFrmBrnzNew2SlvrPrc",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "ForEachCldinBronzeNew",
@@ -200,6 +202,8 @@
 			{
 				"name": "DelBrnzNew",
 				"type": "Delete",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "CpyFrmBrnzNew2SlvrPrc",
@@ -233,7 +237,14 @@
 			{
 				"name": "SynpsDatacleanAndWeather",
 				"type": "SynapseNotebook",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "CpyFrmBrnzNew2SlvrPrc",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.0:10:00",
 					"retry": 1,
@@ -243,12 +254,28 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
+					"notebook": {
+						"referenceName": {
+							"value": "BeeHavenCleaningandWeather",
+							"type": "Expression"
+						},
+						"type": "NotebookReference"
+					},
 					"snapshot": true,
+					"sparkPool": {
+						"referenceName": {
+							"value": "beehavsprkpool",
+							"type": "Expression"
+						},
+						"type": "BigDataPoolReference"
+					},
+					"executorSize": "Small",
 					"conf": {
 						"spark.dynamicAllocation.enabled": null,
 						"spark.dynamicAllocation.minExecutors": null,
 						"spark.dynamicAllocation.maxExecutors": null
 					},
+					"driverSize": "Small",
 					"numExecutors": null
 				},
 				"linkedServiceName": {
