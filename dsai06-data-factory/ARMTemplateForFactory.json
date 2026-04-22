@@ -418,12 +418,6 @@
 								"dependencyConditions": [
 									"Succeeded"
 								]
-							},
-							{
-								"activity": "ForEach2",
-								"dependencyConditions": [
-									"Succeeded"
-								]
 							}
 						],
 						"policy": {
@@ -454,7 +448,7 @@
 						"type": "ForEach",
 						"dependsOn": [
 							{
-								"activity": "GetMetadataSlvrProc",
+								"activity": "GetMetadataSlvrPrc",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -468,7 +462,7 @@
 							},
 							"activities": [
 								{
-									"name": "Copy data1",
+									"name": "CpySlvrPrc2Err",
 									"type": "Copy",
 									"dependsOn": [],
 									"policy": {
@@ -538,7 +532,7 @@
 						}
 					},
 					{
-						"name": "GetMetadataSlvrProc",
+						"name": "GetMetadataSlvrPrc",
 						"type": "GetMetadata",
 						"dependsOn": [
 							{
@@ -572,6 +566,40 @@
 							},
 							"formatSettings": {
 								"type": "DelimitedTextReadSettings"
+							}
+						}
+					},
+					{
+						"name": "DelSlvrPrc_copy1",
+						"type": "Delete",
+						"dependsOn": [
+							{
+								"activity": "ForEach2",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "SlvrProcessing",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"enableLogging": false,
+							"storeSettings": {
+								"type": "AzureBlobFSReadSettings",
+								"recursive": false,
+								"wildcardFileName": "*.csv",
+								"enablePartitionDiscovery": false
 							}
 						}
 					}
