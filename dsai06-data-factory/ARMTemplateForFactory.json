@@ -457,7 +457,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"items": {
-								"value": "@activity('GetMetadataSlvrProc').output.childItems",
+								"value": "@activity('GetMetadataSlvrPrc').output.childItems",
 								"type": "Expression"
 							},
 							"activities": [
@@ -756,6 +756,9 @@
 				"parameters": {
 					"fileName": {
 						"type": "string"
+					},
+					"folderName": {
+						"type": "string"
 					}
 				},
 				"annotations": [],
@@ -763,10 +766,6 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobFSLocation",
-						"fileName": {
-							"value": "@dataset().fileName",
-							"type": "Expression"
-						},
 						"folderPath": "silver/!errors",
 						"fileSystem": "beehavendata"
 					},
