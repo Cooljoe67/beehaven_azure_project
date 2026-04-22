@@ -5,8 +5,6 @@
 			{
 				"name": "GetMetadataFromBronzeNew",
 				"type": "GetMetadata",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -37,8 +35,6 @@
 			{
 				"name": "ForEachCldinBronzeNew",
 				"type": "ForEach",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "GetMetadataFromBronzeNew",
@@ -134,8 +130,6 @@
 			{
 				"name": "CpyFrmBrnzNew2SlvrPrc",
 				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "ForEachCldinBronzeNew",
@@ -202,8 +196,6 @@
 			{
 				"name": "DelBrnzNew",
 				"type": "Delete",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "CpyFrmBrnzNew2SlvrPrc",
@@ -237,8 +229,6 @@
 			{
 				"name": "SynpsDatacleanAndWeather",
 				"type": "SynapseNotebook",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Failed",
 				"dependsOn": [
 					{
 						"activity": "CpyFrmBrnzNew2SlvrPrc",
@@ -443,7 +433,7 @@
 				}
 			},
 			{
-				"name": "DelSlvrPrc_copy1",
+				"name": "DelSlvrPrcOnErr",
 				"type": "Delete",
 				"dependsOn": [
 					{
