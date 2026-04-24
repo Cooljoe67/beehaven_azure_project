@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Notebook1",
+				"name": "NBSlvr2Gold",
 				"type": "SynapseNotebook",
 				"dependsOn": [],
 				"policy": {
@@ -15,7 +15,57 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"snapshot": true
+					"notebook": {
+						"referenceName": {
+							"value": "Slver2Gold",
+							"type": "Expression"
+						},
+						"type": "NotebookReference"
+					},
+					"snapshot": true,
+					"conf": {
+						"spark.dynamicAllocation.enabled": null,
+						"spark.dynamicAllocation.minExecutors": null,
+						"spark.dynamicAllocation.maxExecutors": null
+					},
+					"numExecutors": null
+				},
+				"linkedServiceName": {
+					"referenceName": "SynapsThingyStuff",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Delete1",
+				"type": "Delete",
+				"dependsOn": [
+					{
+						"activity": "NBSlvr2Gold",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "GoldPrc",
+						"type": "DatasetReference"
+					},
+					"enableLogging": true,
+					"storeSettings": {
+						"type": "AzureBlobFSReadSettings",
+						"recursive": true,
+						"wildcardFileName": "*.parquet",
+						"enablePartitionDiscovery": false
+					}
 				}
 			}
 		],
