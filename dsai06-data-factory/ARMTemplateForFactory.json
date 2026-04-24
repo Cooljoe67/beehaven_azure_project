@@ -37,6 +37,80 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/BeeHavenDataProc')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "StartUpToSilver",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Bronze2Silver",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Wait1",
+						"type": "Wait",
+						"dependsOn": [
+							{
+								"activity": "StartUpToSilver",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"waitTimeInSeconds": 180
+						}
+					},
+					{
+						"name": "GoldAndCleanup",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Wait1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Slvr2Gold",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/Bronze2Silver')]",
+				"[concat(variables('factoryId'), '/pipelines/Slvr2Gold')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/Blob2BronzeNew')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -362,7 +436,7 @@
 							}
 						],
 						"policy": {
-							"timeout": "0.0:10:00",
+							"timeout": "0.0:15:00",
 							"retry": 1,
 							"retryIntervalInSeconds": 60,
 							"secureOutput": false,
@@ -632,7 +706,7 @@
 								"type": "DatasetReference",
 								"parameters": {}
 							},
-							"enableLogging": true,
+							"enableLogging": false,
 							"storeSettings": {
 								"type": "AzureBlobFSReadSettings",
 								"recursive": true,
@@ -666,7 +740,7 @@
 								"type": "DatasetReference",
 								"parameters": {}
 							},
-							"enableLogging": true,
+							"enableLogging": false,
 							"storeSettings": {
 								"type": "AzureBlobFSReadSettings",
 								"recursive": true,
@@ -743,6 +817,90 @@
 				"[concat(variables('factoryId'), '/datasets/SlvrRoot')]",
 				"[concat(variables('factoryId'), '/datasets/BrnzRoot')]",
 				"[concat(variables('factoryId'), '/pipelines/Blob2BronzeNew')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Slvr2Gold')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "NBSlvr2Gold",
+						"type": "SynapseNotebook",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebook": {
+								"referenceName": {
+									"value": "Slver2Gold",
+									"type": "Expression"
+								},
+								"type": "NotebookReference"
+							},
+							"snapshot": true,
+							"conf": {
+								"spark.dynamicAllocation.enabled": null,
+								"spark.dynamicAllocation.minExecutors": null,
+								"spark.dynamicAllocation.maxExecutors": null
+							},
+							"numExecutors": null
+						},
+						"linkedServiceName": {
+							"referenceName": "SynapsThingyStuff",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "Delete1",
+						"type": "Delete",
+						"dependsOn": [
+							{
+								"activity": "NBSlvr2Gold",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "GoldPrc",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"enableLogging": true,
+							"storeSettings": {
+								"type": "AzureBlobFSReadSettings",
+								"recursive": true,
+								"wildcardFileName": "*.parquet",
+								"enablePartitionDiscovery": false
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/SynapsThingyStuff')]",
+				"[concat(variables('factoryId'), '/datasets/GoldPrc')]"
 			]
 		},
 		{
